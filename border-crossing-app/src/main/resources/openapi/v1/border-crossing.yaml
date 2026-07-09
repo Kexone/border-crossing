@@ -1,0 +1,77 @@
+openapi: 3.0.3
+info:
+  title: Border Crossing API
+  description: Calculates a land route of border crossings between two countries
+  version: v1
+tags:
+  - name: Routing
+    description: Land routes between countries
+paths:
+  /routing/{origin}/{destination}:
+    get:
+      tags:
+        - Routing
+      operationId: route
+      summary: Find the shortest land route between two countries
+      description: Returns the shortest sequence of border crossings from origin to destination, both identified by their cca3 country codes
+      parameters:
+        - name: origin
+          in: path
+          required: true
+          description: cca3 code of the origin country
+          example: CZE
+          schema:
+            type: string
+            pattern: '[A-Za-z]{3}'
+        - name: destination
+          in: path
+          required: true
+          description: cca3 code of the destination country
+          example: ITA
+          schema:
+            type: string
+            pattern: '[A-Za-z]{3}'
+      responses:
+        '200':
+          description: Route found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RouteResponse'
+        '400':
+          description: Country code is not a valid ISO 3166-1 alpha-3 code, is unknown, or no land route exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Unexpected application error
+
+components:
+  schemas:
+    RouteResponse:
+      type: object
+      required:
+        - route
+      properties:
+        route:
+          type: array
+          description: cca3 codes of the route including origin and destination
+          items:
+            type: string
+          example: [CZE, AUT, ITA]
+    ErrorResponse:
+      type: object
+      description: Error returned when the request cannot be fulfilled
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: string
+          description: Error code
+          example: NO_LAND_ROUTE
+        message:
+          type: string
+          description: Explanation of the error
+          example: No land route from CZE to AUS

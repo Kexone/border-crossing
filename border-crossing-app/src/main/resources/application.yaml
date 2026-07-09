@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: border-crossing
+
+countries:
+  data:
+    url: https://raw.githubusercontent.com/mledoze/countries/master/countries.json
+    connect-timeout: 5s
+    read-timeout: 30s
+  cache:
+    ttl: PT24H
